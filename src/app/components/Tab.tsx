@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,58 +19,33 @@ import { GrPowerReset } from "react-icons/gr";
 export default function Tab() {
   const weightArr = Array.from({ length: 111 }, (_, i) => 40 + i);
   const heightArr = Array.from({ length: 71 }, (_, i) => 140 + i);
-  const waistArr = Array.from({ length: 101 }, (_, i) => 50 + i);
-  const hipArr = Array.from({ length: 101 }, (_, i) => 50 + i);
+  const ageArr = Array.from({ length: 83 }, (_, i) => 18 + i);
 
   const [weight, setWeight] = useState<number | null>(null);
   const [height, setHeight] = useState<number | null>(null);
-  const [waist, setWaist] = useState<number | null>(null);
-  const [hip, setHip] = useState<number | null>(null);
+  const [age, setAge] = useState<number | null>(null);
   const [gender, setGender] = useState<string>("");
   const [bodyMassIndex, setBodyMassIndex] = useState<number | null>(null);
-  const [waistToHipRatio, setWaistToHipRatio] = useState<number | null>(null);
-  const [bodyFatPercentage, setBodyFatPercentage] = useState<number | null>(
-    null
-  );
 
-  const calculateHealthMetrics = () => {
-    if (!weight || !height || !waist || !hip || !gender) {
+  const calculateBMI = () => {
+    if (!weight || !height || !age || !gender) {
       return toast.error("All fields are required!");
     }
 
     const heightInMeters = height / 100;
     const bmi = weight / (heightInMeters * heightInMeters);
-    const whr = waist / hip;
-    let bfp = 0;
-
-    if (gender === "male") {
-      bfp = 1.2 * bmi + 0.23 * 21.66 - 16.2;
-    } else if (gender === "female") {
-      bfp = 1.2 * bmi + 0.23 * 21.66 - 5.4;
-    }
-
     const formattedBMI = parseFloat(bmi.toFixed(2));
-    const formattedWHR = parseFloat(whr.toFixed(2));
-    const formattedBFP = parseFloat(bfp.toFixed(2));
-
     setBodyMassIndex(formattedBMI);
-    setBodyFatPercentage(formattedBFP);
-    setWaistToHipRatio(formattedWHR);
 
-    toast.success(
-      `BMI: ${formattedBMI}, WHR: ${formattedWHR}, BFP: ${formattedBFP}%`
-    );
+    toast.success(`BMI: ${formattedBMI}`);
   };
 
   const resetValue = () => {
     setWeight(null);
     setHeight(null);
-    setWaist(null);
-    setHip(null);
+    setAge(null);
     setGender("");
     setBodyMassIndex(null);
-    setWaistToHipRatio(null);
-    setBodyFatPercentage(null);
   };
 
   return (
@@ -78,14 +53,12 @@ export default function Tab() {
       <Card className="w-full max-w-md md:max-w-lg bg-zinc-900 border border-zinc-700 shadow-xl rounded-2xl">
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-xl font-bold text-white">
-            Body Shape Calculator
+            BMI Calculator
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid gap-2">
-            <Label htmlFor="weight" className="text-white">
-              Weight (kg)
-            </Label>
+            <Label className="text-white">Weight (kg)</Label>
             <Select
               value={weight === null ? "" : weight.toString()}
               onValueChange={(val) => setWeight(Number(val))}
@@ -107,9 +80,7 @@ export default function Tab() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="height" className="text-white">
-              Height (cm)
-            </Label>
+            <Label className="text-white">Height (cm)</Label>
             <Select
               value={height === null ? "" : height.toString()}
               onValueChange={(val) => setHeight(Number(val))}
@@ -131,22 +102,20 @@ export default function Tab() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="waist" className="text-white">
-              Waist (cm)
-            </Label>
+            <Label className="text-white">Age</Label>
             <Select
-              value={waist === null ? "" : waist.toString()}
-              onValueChange={(val) => setWaist(Number(val))}
+              value={age === null ? "" : age.toString()}
+              onValueChange={(val) => setAge(Number(val))}
             >
               <SelectTrigger className="w-full bg-zinc-800 border-zinc-600 text-white">
-                <SelectValue placeholder="Select waist" />
+                <SelectValue placeholder="Select age" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
                 <SelectGroup>
-                  <SelectLabel>Select your waist</SelectLabel>
-                  {waistArr.map((item) => (
+                  <SelectLabel>Select your age</SelectLabel>
+                  {ageArr.map((item) => (
                     <SelectItem key={item} value={item.toString()}>
-                      {item} cm
+                      {item} years
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -155,33 +124,7 @@ export default function Tab() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="hip" className="text-white">
-              Hip (cm)
-            </Label>
-            <Select
-              value={hip === null ? "" : hip.toString()}
-              onValueChange={(val) => setHip(Number(val))}
-            >
-              <SelectTrigger className="w-full bg-zinc-800 border-zinc-600 text-white">
-                <SelectValue placeholder="Select hip" />
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
-                <SelectGroup>
-                  <SelectLabel>Select your hip</SelectLabel>
-                  {hipArr.map((item) => (
-                    <SelectItem key={item} value={item.toString()}>
-                      {item} cm
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="gender" className="text-white">
-              Gender
-            </Label>
+            <Label className="text-white">Gender</Label>
             <Select
               value={gender === null ? "" : gender.toString()}
               onValueChange={(val) => setGender(val)}
@@ -202,7 +145,7 @@ export default function Tab() {
           <div className="flex justify-center items-center gap-3">
             <Button
               className="w-[90%] bg-blue-600 hover:bg-blue-700 cursor-pointer"
-              onClick={calculateHealthMetrics}
+              onClick={calculateBMI}
             >
               Calculate
             </Button>
@@ -214,22 +157,14 @@ export default function Tab() {
         </CardContent>
       </Card>
 
-      {bodyFatPercentage && bodyMassIndex && waistToHipRatio && (
-        <div className="bg-zinc-900 text-white p-4 mt-6 md:ml-10 rounded-lg border border-zinc-700 w-full md:max-w-sm text-center space-y-2">
+      {bodyMassIndex && (
+        <div className="bg-zinc-900 text-white p-4 mt-6 ml-10 rounded-lg border border-zinc-700 w-full max-w-md text-center space-y-2">
           <p className="text-xl font-semibold text-blue-400">
-            Your Health Metrics
+            Your Health Metric
           </p>
           <p className="text-base">
             BMI (Body Mass Index):{" "}
             <span className="font-medium text-white">{bodyMassIndex}</span>
-          </p>
-          <p className="text-base">
-            WHR (Waist-to-Hip Ratio):{" "}
-            <span className="font-medium text-white">{waistToHipRatio}</span>
-          </p>
-          <p className="text-base">
-            BFP (Body Fat Percentage):{" "}
-            <span className="font-medium text-white">{bodyFatPercentage}%</span>
           </p>
         </div>
       )}
