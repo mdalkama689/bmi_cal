@@ -3,13 +3,17 @@
 import React, { useState, useEffect } from "react";
 import Mobile from "./components/Mobile";
 import Tab from "./components/Tab";
+import MobileShare from "./components/share/MobileShare";
+import TabShare from "./components/share/TabShare";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
+    const [deviceType, setDeviceType] = useState<"big" | "small">("big");
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
+       setDeviceType(window.innerWidth < 1024 ? "small" : "big");
     };
 
     handleResize();
@@ -21,5 +25,10 @@ export default function Home() {
     };
   }, []);
 
-  return <div>{isMobile ? <Mobile /> : <Tab />}</div>;
+  return (
+  <div>
+    {isMobile ? <Mobile /> : <Tab />}
+    {deviceType === "small" ? <MobileShare /> : <TabShare />}
+  </div>)
+  ;
 }
